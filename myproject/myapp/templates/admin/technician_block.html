@@ -1,0 +1,53 @@
+{% extends "admin/create_employee.html" %}
+{% block form %}
+    <div id="controle">
+        <ul id="select_type">
+
+            <li><a href="{% url "create_agent" %}"><div class="b1">agent</div></a></li>
+            <li><a href="{% url "create_supervisor" %}"><div class="b2">superviseur</div></a></li>
+            <li><a href="{% url "create_technician" %}"><div class="b3 page">technicien</div></a></li>
+            <li><a href="{% url "create_station_base" %}"><div class="b4 ">admin</div></a></li>
+            <li><a href="{% url "create_superuser" %}"><div class="b5 ">admin system</div></a></li>
+            
+
+        </ul>
+    </div>
+    <div class="container">
+        <div class="form-header">
+            <img src="../../static/images/logo-aeroport.png" alt="Company Logo" class="logo">
+        </div>
+    <h1>Ajouter un technician</h1>
+        <form  method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ technician_formset.management_form }}
+             {% for form in technician_formset %}
+            <label for="cin">CIN :</label>
+                    {{ form.cin }}
+            <label for="nom">Nom :</label>
+                {{ form.nom }}
+            <label for="prenom">Prénom :</label>
+                {{ form.prenom }}
+            <label for="telephone">Téléphone :</label>
+            {{ form.phone }}
+            <label for="image">image:</label>
+            {{ form.image }}
+                 <label for="age">age:</label>
+                 {{ form.age }}
+                  <label for="profession">profession :</label>
+                    {{ form.profession }}
+                 <label for="matricule">matricule :</label>
+                    {{ form.matricule }}
+                {% endfor %}
+            <label for="email">Email :</label>
+            {{ user_form.email }}
+            <label for="password">Mot de passe :</label>
+            {{ user_form.password }}
+            <div class="controles">
+                <button type="submit">Ajouter</button>
+                <a class="annuler" href="{% url 'admin' %}">
+                    <button type="button">Annuler</button>
+                </a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

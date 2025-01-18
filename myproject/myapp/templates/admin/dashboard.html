@@ -1,0 +1,169 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Tableau de Bord</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/admin_page.css' %}" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="profile">
+            <img src="{% static 'images/logo.png' %}" alt="Logo-ONDA">
+        </div>
+        <ul class="list-unstyled components">
+            <li><a href="{% url 'dashboard' %}"><span>Dashboard</span></a></li>
+            <li><a href="{% url 'category_list' %}"><span>Gestion des Catégories</span></a></li>
+            <li><a href="{% url 'location_list' %}"><span>Gestion des Emplacements</span></a></li>
+            <li><a href="{% url 'admin' %}"><span>Gestion des Utilisateurs</span></a></li>
+            <li><a href="{% url 'ticket_list' %}" >Tableau de Bord des Tickets</a></li>
+            <li><a href="{% url 'login' %}"><span>Déconnexion</span></a></li>
+        </ul>
+    </div>
+    <button><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 50 50" width="50px" height="50px"><path d="M 5 8 A 2.0002 2.0002 0 1 0 5 12 L 45 12 A 2.0002 2.0002 0 1 0 45 8 L 5 8 z M 5 23 A 2.0002 2.0002 0 1 0 5 27 L 45 27 A 2.0002 2.0002 0 1 0 45 23 L 5 23 z M 5 38 A 2.0002 2.0002 0 1 0 5 42 L 45 42 A 2.0002 2.0002 0 1 0 45 38 L 5 38 z"/></svg></button>
+    <!-- Page Content -->
+    <div class="content">
+        <div class="content-header">
+            <h1 style="font-weight: bold;">Tableau de Bord</h1>
+        </div>
+    
+        <!-- Filtres -->
+<div class="row mb-3">
+    <div class="col-md-6">
+        <form method="GET" action="{% url 'dashboard' %}">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="category">Catégorie</label>
+                    <select name="category" id="category" class="form-control">
+                        <option value="">-- Tous --</option>
+                        {% for category in categories %}
+                            <option value="{{ category.name }}" {% if category.name == selected_category %}selected{% endif %}>{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="location">Emplacement</label>
+                    <select name="location" id="location" class="form-control">
+                        <option value="">-- Tous --</option>
+                        {% for location in locations %}
+                            <option value="{{ location.name }}" {% if location.name == selected_location %}selected{% endif %}>{{ location.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Filtrer</button>
+        </form>
+    </div>
+</div>
+
+
+        <!-- Statistiques -->
+        <div class="row">
+            <div class="col-md-2">
+                <div class="card text-white bg-primary mb-3">
+                    <div class="card-header">Total Tickets</div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ total_tickets }}</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card text-white bg-success mb-3">
+                    <div class="card-header">Tickets Ouverts</div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ open_tickets }}</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card text-white bg-primary mb-3">
+                    <div class="card-header">Emplacements</div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ num_locations }}</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card text-white bg-success mb-3">
+                    <div class="card-header"> Catégories</div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ num_categories }}</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card text-white bg-warning mb-3">
+                    <div class="card-header"> Employés</div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ num_employees }}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphiques -->
+        <div class="row">
+            <div class="col-md-4">
+                <canvas id="priorityChart"></canvas>
+            </div>
+            <div class="col-md-7">
+                <canvas id="ticketsChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Graphique des tickets par catégorie
+        var ctx1 = document.getElementById('ticketsChart').getContext('2d');
+        var ticketsChart = new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: [{% for item in tickets_per_category %}'{{ item.role }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+                datasets: [{
+                    label: 'Tickets par Catégorie',
+                    data: [{% for item in tickets_per_category %}{{ item.count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+                    backgroundColor: ['#d9534f', '#f0ad4e', '#5bc0de','#5cb85c','#428bca','#5bc0de','#f7b7a3','#ffb6c1','#ff69b4','#8b008b'], // Couleurs de fond
+                    borderColor: ['#d9534f', '#f0ad4e', '#5bc0de','#5cb85c','#428bca','#5bc0de','#f7b7a3','#ffb6c1','#ff69b4','#8b008b'], // Couleurs de bordure
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+
+        var priorityCtx = document.getElementById('priorityChart').getContext('2d');
+        var priorityChart = new Chart(priorityCtx, {
+            type: 'pie',
+            data: {
+                labels: [{% for item in tickets_per_priority %}'{{ item.priority }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+                datasets: [{
+                    label: 'Tickets par Priorité',
+                    data: [{% for item in tickets_per_priority %}{{ item.count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+                    backgroundColor: ['#f0ad4e', '#d9534f'], // Couleur pour 'Moyenne' et 'Haute'
+                }]
+            },
+            options: {
+                responsive: true,
+            }
+        });
+
+
+       
+
+        
+
+        
+    </script>
+</body>
+</html>

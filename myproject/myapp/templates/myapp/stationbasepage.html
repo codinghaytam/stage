@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord des tickets</title>
+    <link rel="stylesheet" href="../../static/css/technician.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="profile">
+            <img src="../../static/images/logo.png" alt="Logo-ONDA">
+            <p>Superviseur</p>
+        </div>
+        <ul>
+
+            <li><a href="#"><span>Évaluation</span></a></li>
+            <li><a href="#"><span>Équipes</span></a></li>
+            <li><a href="#"><span>Disciplines</span></a></li>
+            <li><a href="#" class="active"><span>Tableau de bord des tickets</span></a></li>
+            <li><a href="#"><span>Liens</span></a></li>
+        </ul>
+    </div>
+    <div class="content">
+        <div class="content-header">
+            <h1>Tableau de bord des tickets</h1>
+            <a href="{% url 'create_ticket' %}" class="add-ticket">+ Ajouter un ticket</a>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>image</th>
+                    <th>Demandeur</th>
+                    <th>Type de ticket</th>
+                    <th>Priorité</th>
+                </tr>
+            </thead>
+            <tbody>
+               
+                
+            </tbody>
+        </table>
+    </div>
+            <script>
+                $(document).ready(function() {
+                    setInterval(function(){
+                        $.ajax({
+                            type:"GET",
+                            url:"{% url 'DataDisplay' %}",
+                            success: function(responce){
+                                $("tbody").empty();
+                                for (var key in responce.tickets){
+                                $("tbody").append(`
+                                    <tr>
+                                        <td><img src="/`+responce.tickets[key].image+`" alt="no image" ></td>
+                                        <td>`+responce.tickets[key].creator+`</td>
+                                        <td>`+responce.tickets[key].type+`</td>
+                                         <td><span class="status open">`+responce.tickets[key].priorite+`</span></td>
+                                    </tr>
+                                `)
+                                }
+                                
+                            }
+                            }
+                            
+                        )
+                        }
+                        
+                    ,1000)
+                    }
+                )
+            </script>
+</body>
+</html>

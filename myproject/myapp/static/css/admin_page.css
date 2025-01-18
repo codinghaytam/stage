@@ -1,0 +1,421 @@
+button img{
+            width: 1rem;
+        }
+        * {box-sizing: border-box;}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#menu-button,#menu-button2{
+    background-color: transparent;
+     background-color: #a80000;
+    height: 50px;
+    border-radius: 5px;
+    fill: white;
+    margin: 10px;
+}
+
+
+
+.topnav {
+    overflow: hidden;
+    background-color: #a80000;
+    border-radius: 5px 5px 0px 0px;
+    max-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 10px;
+}
+
+
+.topnav .search-container {
+    float: right;
+    margin: 10px;
+    padding: 0px;
+    border-radius: 5px;
+    box-shadow: 5px 5px 5px rgba(21, 21, 21, 0.29);
+    flex-wrap: nowrap;
+    display: flex;
+
+}
+
+
+
+
+.topnav input[type=text] {
+     padding: 10px;
+    margin-top: 0px;
+    font-size: 17px;
+    border: none;
+    border-radius: 5px 0px 0px 5px;
+
+}
+
+.topnav .search-container button {
+    width: 60px;
+  float: right;
+  padding: 10px;
+    margin-top: 0px;
+  background: #ddd;
+  font-size: 17px;
+    height: 100%;
+  border: none;
+  cursor: pointer;
+    border-radius: 0px 5px 5px 0px ;
+}
+
+.topnav .search-container button:hover {
+  background: #ccc;
+}
+
+
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            display: flex;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #dedede;
+            color: white;
+            padding: 20px;
+            display: flex;
+            transform: translate(0px);
+            flex-direction: column;
+            height: 100vh;
+            box-shadow: 3px 0px 10px rgba(0, 0, 0, 0.41);
+            position: fixed;
+        }
+
+        .profile {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .profile img {
+            width: 150px;
+            height: 120px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 45px;
+        }
+        .profile h2 {
+            margin: 0;
+            font-size: 18px;
+            color: rgb(0, 0, 0);
+        }
+        .profile p {
+            margin: 0;
+            font-size: 14px;
+            color: #151515;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+        .sidebar ul li a {
+            color: rgb(0, 0, 0);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+        .sidebar ul li a:hover {
+            background-color:#a80000;
+            color: white;
+        }
+         .sidebar ul li .selected {
+            background-color: #a80000;
+            color: white;
+        }
+        .sidebar ul li a span {
+            margin-left: 10px;
+        }
+        .content {
+            flex: 1;
+            padding: 20px;
+            padding-left: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .content-header h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+        .content-header .breadcrumb {
+            font-size: 14px;
+            color: #777;
+        }
+        .add-ticket, .add-employee {
+            background-color: #5cb85c;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+        .add-ticket:hover, .add-employee:hover {
+            background-color: #4cae4c;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 0px 0px 5px 5px;
+            overflow: hidden;
+        }
+        table th, table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        table th {
+            background-color: #a80000;
+            color: white;
+        }
+        table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+        .status.open { background-color: #f0ad4e; }
+        .status.rejected { background-color: #d9534f; }
+        .status.completed { background-color: #5cb85c; }
+        .visualization {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .visualization .chart {
+            width: 48%;
+            height: 300px;
+            background-color: #ffffff;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .stats-summary {
+            background-color: #ffffff;
+            padding: 30px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .stats-summary h2 {
+            margin-top: 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .stats-summary p {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #555;
+        }
+        .stats-summary span {
+            font-weight: bold;
+            color: #a80000;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+        .logo {
+            height: 50px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            color: #333;
+        }
+        .user-info i {
+            margin-right: 10px;
+        }
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #ff001e;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #ff001e;
+        }
+/* Styles pour la section Ajouter Ticket */
+.add-ticket-section {
+    display: none; /* Cacher par défaut */
+    background-color: #ffffff; /* Couleur de fond blanche */
+    padding: 120px; /* Espacement interne */
+    box-shadow: 0 0 20px rgba(0,0,0,0.1); /* Ombre autour de la section */
+    border-radius: 5px; /* Coins arrondis */
+    margin-top: 140px; /* Espacement au-dessus de la section */
+    text-align: center; /* Centrer le texte et le bouton horizontalement */
+    max-width: 1100px; /* Largeur maximale de la section */
+    margin-left: auto; /* Centre la section horizontalement */
+    margin-right: auto; /* Centre la section horizontalement */
+}
+
+/* Afficher la section Ajouter Ticket uniquement lorsqu'elle est active */
+#add-ticket.active {
+    display: block; /* Afficher la section active */
+}
+
+/* Styles pour le titre de la section */
+.add-ticket-section h2 {
+    font-size: 28px; /* Taille du texte du titre */
+    margin-bottom: 30px; /* Espacement sous le titre */
+    color: #333333; /* Couleur du texte */
+    font-weight: bold; /* Poids de la police du titre */
+}
+
+/* Styles pour le bouton d'ajout de ticket */
+.add-ticket-section a.add-ticket {
+    display: inline-block;
+    padding: 15px 25px;
+    background-color:#ff001e; /* Couleur du fond du bouton */
+    color: #ffffff; /* Couleur du texte du bouton */
+    text-decoration: none; /* Supprimer le soulignement du lien */
+    border-radius: 5px; /* Coins arrondis du bouton */
+    font-size: 16px; /* Taille du texte du bouton */
+    font-weight: bold; /* Texte en gras */
+    transition: background 0.3s ease; /* Effet de transition sur le survol */
+}
+
+/* Styles au survol du bouton */
+.add-ticket-section a.add-ticket:hover {
+    background-color: #ff001e; /* Couleur du fond du bouton au survol */
+}
+
+/* Styles pour la section Ajouter Ticket sur petits écrans */
+@media (max-width: 768px) {
+    .add-ticket-section {
+        padding: 30px; /* Moins d'espacement interne sur petits écrans */
+    }
+
+    .add-ticket-section h2 {
+        font-size: 20px; /* Réduire la taille du texte du titre */
+        margin-bottom: 20px; /* Espacement réduit sous le titre */
+    }
+
+    .add-ticket-section a.add-ticket {
+        padding: 12px 20px; /* Moins d'espace dans le bouton */
+        font-size: 14px; /* Réduire la taille du texte du bouton */
+    }
+}
+
+
+@media (max-width: 900px) {
+      .sidebar {
+          transform: translate(-300px);
+      }
+    .content{
+        padding-left: 0px;
+    }
+
+}
+.filter{
+    width:100px;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+dialog {
+    margin-top: 10px;
+    border-radius: 5px;
+    border-width: 1px;
+    border: #555555;
+    top:40%
+
+}
+dialog div{
+    display: flex;
+    flex-direction: column;
+}
+dialog::backdrop {
+  background-color: hsla(0, 0%, 9%, 0.25);
+}
+dialog .exit{
+    background: transparent;
+    width: 1rem;
+    margin-top: -5px;
+    margin-bottom: 10px;
+    text-align: center;
+    border: red 5px solid;
+    color:red;
+    font-weight: bolder;
+    font-size: 25px;
+    padding: 2px 20px 5px 5px;
+    line-height: 20px;
+
+}
+
+dialog .supprimer{
+        align-self: flex-end ;
+
+}
+.delete{
+    background: #e70404;
+    margin-top: 0px;
+    margin-right: 10px;
+}
+.delete:hover{
+        background: #af0000;
+
+}
+

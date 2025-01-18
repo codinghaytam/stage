@@ -1,0 +1,209 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un ticket</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-image: url('{% static "images/back_ticket.png" %}');
+            background-size: cover;
+            background-position: center;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 600px;
+            margin-left: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+        input[type="text"], select, textarea, input[type="date"] {
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+            height: 100px;
+        }
+        input[type="file"] {
+            margin-top: 10px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+        .logo {
+            height: 50px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            color: #333;
+        }
+        .user-info i {
+            margin-right: 10px;
+        }
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .btn-back {
+            background-color: #e76017;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-back:hover {
+            background-color: #5a6268;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-header">
+            <button class="btn-back" onclick="window.history.back();">Annuler l'Ajout</button>
+            <img src="{% static 'images/logo-aeroport.png' %}" alt="Company Logo" class="logo">
+            
+        </div>
+        <h1>Créer un ticket</h1>
+        <form action="{% url 'create_ticket' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <label for="id_role">Catégorie:</label>
+        <select id="id_role" name="role" required>
+            <option value="">Sélectionnez une catégorie</option>
+            <option value="electricite">Electricité</option>
+            <option value="electricite_balisage">Electricité balisage</option>
+            <option value="electromecanique">Electromécanique</option>
+            <option value="electronique">Electronique</option>
+            <option value="electrothermie">Electrothermie</option>
+            <option value="exploitation">Exploitation</option>
+            <option value="gestion_dechets">Gestion des déchets</option>
+            <option value="informatique">Informatique</option>
+            <option value="infrastructures">Infrastructures</option>
+            <option value="radar_detection">Radar Détection</option>
+            <option value="radiocom">RadioComm</option>
+            <option value="radionav">RadioNav</option>
+            <option value="telecommunications">Télécommunications</option>
+            <option value="telecoms">Télécoms</option>
+            <option value="ti">TI</option>
+            <option value="equipements">Tous les équipements</option>
+            <option value="traitement_plan_vol">Traitement et plan de vol</option>
+            <option value="batiments">Bâtiments</option>
+        </select>
+
+            <label for="id_location">Emplacement :</label>
+            <select id="id_location" name="location" required>
+                <option value="">Sélectionnez un emplacement</option>
+                <option value="T2 Livraison bagages">T2 Livraison bagages</option>
+                <option value="T1 Hall public départ niveau 1">T1 Hall public départ niveau 1</option>
+                <option value="ZIRAM">ZIRAM</option>
+                <option value="T1 Livraison bagages">T1 Livraison bagages</option>
+                <option value="T2 Hall public arrivée niveau 0">T2 Hall public arrivée niveau 0</option>
+                <option value="Communication">Communication</option>
+                <option value="Taxiway T1">Taxiway T1</option>
+                <option value="Taxiway T2">Taxiway T2</option>
+                <option value="Taxiway T3">Taxiway T3</option>
+                <option value="Taxiway T4">Taxiway T4</option>
+                <option value="Taxiway T5">Taxiway T5</option>
+                <option value="Taxiway N">Taxiway N</option>
+                <option value="Taxiway O">Taxiway O</option>
+                <option value="Taxiway P">Taxiway P</option>
+                <option value="Taxiway Q">Taxiway Q</option>
+                <option value="Taxiway R">Taxiway R</option>
+                <option value="Taxiway S">Taxiway S</option>
+                <option value="Piste 35R">Piste 35R</option>
+                <option value="Piste 35L">Piste 35L</option>
+                <option value="Piste 17R">Piste 17R</option>
+                <option value="Piste 17L">Piste 17L</option>
+                <option value="Périphérique">Périphérique</option>
+                <option value="T2 Tri bagages">T2 Tri bagages</option>
+                <option value="T2 Tri bagages correspondance">T2 Tri bagages correspondance</option>
+                <option value="T2 Filtre police arrivée">T2 Filtre police arrivée</option>
+                <option value="T2 Embarquement International niv 2">T2 Embarquement International niv 2</option>
+                <option value="T1 Hall public départ niveau 0">T1 Hall public départ niveau 0</option>
+                <option value="T1 Embarquement domestique">T1 Embarquement domestique</option>
+                <option value="T2 Débarquement">T2 Débarquement</option>
+                <option value="T2 Embarquement International niv 0 B11-B13">T2 Embarquement International niv 0 B11-B13</option>
+                <option value="T2 Embarquement International niv 0 C14-C23">T2 Embarquement International niv 0 C14-C23</option>
+                <option value="Terminal 3">Terminal 3</option>
+                <option value="T2 Transit">T2 Transit</option>
+                <option value="Balise">Balise</option>
+                <option value="T2 Datacenter">T2 Datacenter</option>
+                <option value="Parking K">Parking K</option>
+                <option value="Parking C">Parking C</option>
+                <option value="Parking E">Parking E</option>
+                <option value="Parking B">Parking B</option>
+                <option value="Parking J">Parking J</option>
+                <option value="Parking D">Parking D</option>
+            </select>
+
+            <label for="id_priority">Priorité :</label>
+            <select id="id_priority" name="priority" required>
+                <option value="">Sélectionnez la priorité</option>
+                <option value="high">Haute</option>
+                <option value="medium">Moyenne</option>
+            </select>
+
+            <label for="id_description">Description :</label>
+            <textarea id="id_description" name="description"></textarea>
+
+            <label for="id_image">Image :</label>
+            <input type="file" id="id_image" name="image" accept="image/*">
+
+            <button type="submit">Créer le ticket</button>
+        </form>
+    </div>
+</body>
+</html>

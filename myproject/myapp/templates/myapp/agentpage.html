@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>agent page</title>
+    <link rel="stylesheet" href="../../static/css/card.css"> 
+    <link rel="stylesheet" href="../../static/css/neutralize.css"> 
+    <link rel="stylesheet" href="../../static/css/usersbase.css">
+</head>
+<body>
+ <div class="card">
+        <div class="column1">
+        <img src="../../static/images/placeholder.jpeg">
+        <ul>
+            <li>{{ user.agent.cin }}</li>
+        </ul>
+        </div>
+        <div class="column2">
+            <img src="../../static/images/logo.png" alt="">
+            <ul>
+                <li>full name : {{ user.agent.nom }} {{ user.agent.prenom }}</li>
+                <li> email: {{ user.email }} </li>
+                <li> num:{{ user.agent.phone }} </li>
+            </ul>
+             </div>
+    </div>
+    {% block block %}
+    {% endblock %}
+    <a href="{% url 'create_ticket' %}" class="add-button">
+            <p>ajouté un ticket</p>
+            <p class="plus">+</p>
+    </a>
+</body>
+</html>

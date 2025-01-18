@@ -1,0 +1,332 @@
+{% load static %}
+{% load ticket_tags %}
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Tableau de Bords des Tickets</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../static/css/neutralize.css" rel="stylesheet">
+    <link href="../../static/css/error_messages.css" rel="stylesheet">
+    <link href="../../static/css/admin_page.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="../../static/js/sidebar.js" defer></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <button id="menu-button2"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 50 50" width="30px" height="30px" ><path d="M 5 8 A 2.0002 2.0002 0 1 0 5 12 L 45 12 A 2.0002 2.0002 0 1 0 45 8 L 5 8 z M 5 23 A 2.0002 2.0002 0 1 0 5 27 L 45 27 A 2.0002 2.0002 0 1 0 45 23 L 5 23 z M 5 38 A 2.0002 2.0002 0 1 0 5 42 L 45 42 A 2.0002 2.0002 0 1 0 45 38 L 5 38 z"/></svg></button>
+
+        <div class="profile">
+            <img src="../../static/images/logo.png" alt="Logo-ONDA">
+        </div>
+        <ul class="list-unstyled components">
+            <li><a href="{% url 'dashboard' %}"><span>Dashboard</span></a></li>
+            <li class="active">
+                <a href="{% url 'ticket_list' %}" class="active"><span>Gestion des tickets</span></a>
+            </li>
+            
+            <li><a href="{% url 'category_list' %}"><span>Gestion des Catégories</span></a></li>
+            <li><a href="{% url 'location_list' %}"><span>Gestion des Emplacements</span></a></li>
+            <li><a href="{% url 'closed_tickets_list' %}"><span>Tickets Clos</span></a></li>
+            <li><a href="{% url 'admin' %}"><span>Gestion des Utilisateurs</span></a></li>
+            <li><a href="{% url 'login' %}"><span>Déconnexion</span></a></li>
+        </ul>
+    </div>
+
+    <!-- Page Content -->
+    <div class="content">
+        <div class="content-header">
+            <button id="menu-button"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 50 50" width="30px" height="30px" ><path d="M 5 8 A 2.0002 2.0002 0 1 0 5 12 L 45 12 A 2.0002 2.0002 0 1 0 45 8 L 5 8 z M 5 23 A 2.0002 2.0002 0 1 0 5 27 L 45 27 A 2.0002 2.0002 0 1 0 45 23 L 5 23 z M 5 38 A 2.0002 2.0002 0 1 0 5 42 L 45 42 A 2.0002 2.0002 0 1 0 45 38 L 5 38 z"/></svg></button>
+            <h1 style="font-weight: bold;">Tableau de Bords des Tickets</h1>
+            <a href="{% url 'create_ticket' %}" class="add-employee">Ajouter Ticket</a>
+        </div>
+        <!-- Top Navbar -->
+        <div class="topnav">
+            <form action="{% url 'ticket_list' %}" method="get">
+                <select id="status" name="status" class="filter">
+                    <option value="">All statuts</option>
+                    <option value="unaffected">Non affecté</option>
+                    <option value="affected">Affecté</option>
+                    <option value="declared_fixed">Déclaré Réparé</option>
+                    <option value="closed">Clôturé</option>
+                </select>
+                <select id="category" name="category" class="filter">
+                    <option value="">All categories</option>
+                    {% for choice in ticket_role_choices %}
+                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                    {% endfor %}
+                </select>
+                <div class="search-container">
+                    <input type="text" id="description" name="description" class="search-bar" placeholder="Description...">
+                    <button type="submit" class="search">
+                        <img src="../../static/images/find.png">
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Main Content -->
+        <table>
+            <thead>
+            <tr>
+                <th>Catégorie</th>
+                <th>Description</th>
+                <th>Emplacement</th>
+                <th>Priorité</th>
+                <th>Status</th>
+                <th>Image</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody class="users">
+            {% for ticket in tickets %}
+                <tr>
+                    <td>{{ ticket.get_role_display }}</td>
+                    <td>{{ ticket.description }}</td>
+                    <td>{{ ticket.location }}</td>
+                    <td>{{ ticket.get_priority_display }}</td>
+                    <td class="status {{ ticket.status }}">
+                        {% if ticket.status == 'unaffected' %}
+                            <span class="badge badge-secondary">Non affecté</span>
+                        {% elif ticket.status == 'affected' %}
+                            <span class="badge badge-warning">Affecté</span>
+                        {% elif ticket.status == 'declared_fixed' %}
+                            <span class="badge badge-info">Déclaré Réparé</span>
+                        {% elif ticket.status == 'closed' %}
+                            <span class="badge badge-success">Clôturé</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="ticket-image">
+                        {% if ticket.image %}
+                            <a href="{{ ticket.image.url }}" target="_blank">
+                                <img src="{{ ticket.image.url }}" alt="Ticket Image" style="width: 100px; height: auto; max-width: 100%; border-radius: 4px;">
+                            </a>
+                        {% else %}
+                            No Image
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button class="btn btn-info btn-custom info-button" data-ticket-id="{{ ticket.id }}">Information</button>
+                        {% if user|can_validate:ticket %}
+                        <form action="{% url 'validate_ticket' ticket.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-validate btn-custom">Valider</button>
+                        </form>
+                        {% endif %}
+                        
+                        {% if user|can_close:ticket %}
+                        <button class="btn btn-close btn-custom close-button" data-ticket-id="{{ ticket.id }}">Close</button>
+                        {% endif %}
+
+                        {% if user|can_return_to_unaffected:ticket %}
+                        <button class="btn btn-return btn-custom return-to-unaffected-button" data-ticket-id="{{ ticket.id }}">Retourner à Non Affecté</button>
+                        {% endif %}
+
+                        {% if user|can_delete %}
+                        <button type="button" class="btn btn-danger delete" data-ticket-id="{{ ticket.id }}" data-toggle="modal" data-target="#deleteModal" data-url="{% url 'delete_ticket' ticket.id %}">Supprimer</button>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal for Information -->
+    <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="infoModalLabel">Détails du Ticket</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="info-modal-body">
+                    <!-- Les informations du ticket seront chargées ici par JavaScript -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Delete Data Modal</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are You Sure? You want to Delete Data.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <form id="deleteForm" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Yes! Delete Data</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+     <!-- Modal for Returning to Unaffected -->
+     <div id="returnToUnaffectedModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Confirmation de Retour</h2>
+            <p>Voulez-vous vraiment retourner ce ticket à l'état non affecté ?</p>
+            <div class="modal-buttons">
+                <form id="returnToUnaffectedForm" action="" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-confirm btn-custom">Confirmer</button>
+                </form>
+                <button class="btn btn-cancel btn-custom">Annuler</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+
+    <script>
+       document.addEventListener('DOMContentLoaded', function () {
+        // Return to Unaffected Modal
+        var returnToUnaffectedModal = document.getElementById('returnToUnaffectedModal');
+        var returnToUnaffectedModalClose = returnToUnaffectedModal.querySelector('.close');
+        var returnToUnaffectedButtons = document.querySelectorAll('.return-to-unaffected-button');
+
+        returnToUnaffectedButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var ticketId = this.getAttribute('data-ticket-id');
+                document.getElementById('returnToUnaffectedForm').action = "{% url 'return_to_unaffected' 0 %}".replace('0', ticketId);
+                returnToUnaffectedModal.style.display = 'block';
+            });
+        });
+
+        returnToUnaffectedModalClose.onclick = function() {
+            returnToUnaffectedModal.style.display = 'none';
+        };
+
+        window.onclick = function(event) {
+            if (event.target == returnToUnaffectedModal) {
+                returnToUnaffectedModal.style.display = 'none';
+            }
+        };
+
+        document.getElementById('returnToUnaffectedForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+            var formData = new FormData(this);
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.reload(); // Reload the page to reflect changes
+                } else {
+                    alert(data.message || 'Échec du retour du ticket à non affecté');
+                }
+            })
+            .catch(error => console.error('Error returning ticket to unaffected:', error));
+        });
+
+        // Gestion du Modal d'Information
+        var infoButtons = document.querySelectorAll('.info-button');
+
+        infoButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var ticketId = this.getAttribute('data-ticket-id');
+                fetch(`/tickets/${ticketId}/details/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        var modalBody = document.getElementById('info-modal-body');
+                        modalBody.innerHTML = `
+                            <p><strong>Catégorie:</strong> ${data.role}</p>
+                            <p><strong>Description:</strong> ${data.description}</p>
+                            <p><strong>Emplacement:</strong> ${data.location}</p>
+                            <p><strong>Priorité:</strong> ${data.priority}</p>
+                            <p><strong>Status:</strong> ${data.status}</p>
+                            <p><strong>Date de création:</strong> ${data.creationDate}</p>
+                            <p><strong>Image:</strong> ${data.image ? '<img src="' + data.image + '" style="width:100px;height:auto;">' : 'Aucune Image'}</p>
+                        `;
+                        $('#infoModal').modal('show');
+                    })
+                    .catch(error => console.error('Error fetching ticket details:', error));
+            });
+        });
+
+        // Close Ticket Confirmation Modal
+        var confirmationModal = document.getElementById('confirmationModal');
+        var closeModalClose = confirmationModal.querySelector('.close');
+        var cancelButton = confirmationModal.querySelector('.btn-cancel');
+        var closeForm = document.getElementById('closeTicketForm');
+
+        document.addEventListener('click', function(event) {
+            if (event.target && event.target.matches('.close-button')) {
+                var ticketToClose = event.target.getAttribute('data-ticket-id');
+                closeForm.action = "{% url 'close_ticket' 0 %}".replace('0', ticketToClose);
+                confirmationModal.style.display = 'block';
+            }
+        });
+
+        closeModalClose.onclick = function() {
+            confirmationModal.style.display = 'none';
+        };
+
+        cancelButton.onclick = function() {
+            confirmationModal.style.display = 'none';
+        };
+
+        window.onclick = function(event) {
+            if (event.target == confirmationModal) {
+                confirmationModal.style.display = 'none';
+            }
+        };
+
+        closeForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+            var formData = new FormData(closeForm);
+            fetch(closeForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.reload(); // Reload the page to reflect changes
+                } else {
+                    alert(data.message || 'Échec de la clôture du ticket');
+                }
+            })
+            .catch(error => console.error('Error closing ticket:', error));
+        });
+    });
+
+        $('#deleteModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var url = button.data('url');
+            var modal = $(this);
+            modal.find('#deleteForm').attr('action', url);
+        });
+    </script>
+</body>
+</html>

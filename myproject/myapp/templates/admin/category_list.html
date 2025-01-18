@@ -1,0 +1,144 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Gestion des Catégories</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/admin_page.css' %}" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="profile">
+            <img src="{% static 'images/logo.png' %}" alt="Logo-ONDA">
+        </div>
+        <ul class="list-unstyled components">
+            <li><a href="{% url 'dashboard' %}"><span>Dashboard</span></a></li>
+            <li><a href="{% url 'category_list' %}"><span>Gestion des Catégories</span></a></li>
+            <li><a href="{% url 'location_list' %}"><span>Gestion des Emplacements</span></a></li>
+            <li><a href="{% url 'admin' %}"><span>Gestion des Utilisateurs</span></a></li>
+            <li><a href="{% url 'ticket_list' %}" >Tableau de Bords des Tickets</a>
+            <li><a href="{% url 'closed_tickets_list' %}"><span>Tickets Clos</span></a></li>
+            
+            <li><a href="{% url 'login' %}"><span>Déconnexion</span></a></li>
+            
+            
+        </ul>
+    </div>
+
+    <!-- Page Content -->
+    <div class="content">
+        <div class="content-header">
+            <h1 style="font-weight: bold;">Gestion des Catégories</h1>
+
+            <button type="button" class="add-employee" data-toggle="modal" data-target="#addCategoryModal">
+                Ajouter Catégorie
+            </button>
+        </div>
+        
+        <!-- Modal pour Ajouter Catégorie -->
+        <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addCategoryModalLabel">Ajouter une Catégorie</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" action="{% url 'category_list' %}">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <div class="form-group">
+                                <button type="submit" name="add" class="add-employee">Ajouter</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal pour Confirmation de Suppression -->
+        <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirmation de Suppression</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Êtes-vous sûr de vouloir supprimer cette catégorie ?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <form id="deleteForm" method="POST" action="{% url 'category_list' %}">
+                            {% csrf_token %}
+                            <input type="hidden" id="deleteId" name="delete">
+                            <button type="submit" class="btn btn-danger">Supprimer</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top Navbar -->
+        <div class="topnav">
+            <form method="GET" action="{% url 'category_list' %}">
+                <div class="search-container">
+                    <input type="text" id="search" name="search" class="search-bar" placeholder="Rechercher...">
+                    <button type="submit" class="search">
+                        <img src="{% static 'images/find.png' %}" alt="Rechercher" style="width: 20px;">
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Main Content -->
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Nom de la Catégorie</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for category in categories %}
+                    <tr>
+                        <td>{{ category.name }}</td>
+                        <td>
+                            <button type="button" class="delete" data-toggle="modal" data-target="#deleteConfirmationModal" data-id="{{ category.id }}">
+                                Supprimer
+                            </button>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="2">Aucune catégorie trouvée.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Script pour configurer le modal de suppression -->
+    <script>
+        $('#deleteConfirmationModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // Bouton qui a déclenché le modal
+            var categoryId = button.data('id'); // Extraire l'ID de la catégorie
+            var modal = $(this);
+            modal.find('#deleteId').val(categoryId); // Mettre à jour le champ caché du formulaire
+        });
+    </script>
+</body>
+</html>

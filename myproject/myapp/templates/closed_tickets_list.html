@@ -1,0 +1,193 @@
+{% load static %}
+{% load ticket_tags %}
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Tickets Clos</title>
+    <link href="{% static 'css/neutralize.css' %}" rel="stylesheet">
+    <link href="{% static 'css/admin_page.css' %}" rel="stylesheet">
+    <link href="{% static 'css/error_messages.css' %}" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="profile">
+            <img src="{% static 'images/logo.png' %}" alt="Logo-ONDA">
+        </div>
+        <ul class="list-unstyled components">
+            <li><a href="{% url 'dashboard' %}"><span>Dashboard</span></a></li>
+            <li><a href="{% url 'ticket_list' %}"><span>Tableau de bord des tickets</span></a></li>
+            <li class="active"><a href="#" class="active"><span>Tickets Clos</span></a></li>
+            <li><a href="{% url 'category_list' %}"><span>Gestion des Catégories</span></a></li>
+            <li><a href="{% url 'location_list' %}"><span>Gestion des Emplacements</span></a></li>
+            <li><a href="{% url 'admin' %}"><span>Gestion des Utilisateurs</span></a></li>
+            <li><a href="{% url 'login' %}"><span>Déconnexion</span></a></li>
+        </ul>
+    </div>
+    
+    <!-- Page Content -->
+    <div class="content">
+        <div class="content-header">
+            <h1 style="font-weight: bold;">Tickets Clos</h1>
+        </div>
+        <!-- Top Navbar -->
+        <div class="topnav">
+            <form action="{% url 'closed_tickets_list' %}" method="get">
+                <select id="status" name="status" class="filter">
+                    <option value="">All status</option>
+                    <option value="closed" {% if request.GET.status == 'closed' %}selected{% endif %}>Clôturé</option>
+                </select>
+                <select id="category" name="category" class="filter">
+                    <option value="">All categories</option>
+                    {% for choice in ticket_role_choices %}
+                    <option value="{{ choice.0 }}" {% if request.GET.category == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+                    {% endfor %}
+                </select>
+                <div class="search-container">
+                    <input type="text" id="description" name="description" class="search-bar" value="{% if request.GET.description %}{{ request.GET.description }}{% endif %}" placeholder="Description...">
+                    <button type="submit" class="search">
+                        <img src="{% static 'images/find.png' %}">
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Success message after deletion -->
+        {% if messages %}
+        <div class="alert alert-success">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Catégorie</th>
+                    <th>Description</th>
+                    <th>Emplacement</th>
+                    <th>Priorité</th>
+                    <th>Status</th>
+                    <th>Image</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                <tr>
+                    <td>{{ ticket.role }}</td>
+                    <td>{{ ticket.description }}</td>
+                    <td>{{ ticket.location }}</td>
+                    <td>{{ ticket.priority }}</td>
+                    <td class="status {{ ticket.status }}">{{ ticket.status }}</td>
+                    <td class="ticket-image">
+                        {% if ticket.image %}
+                        <a href="{{ ticket.image.url }}" target="_blank">
+                            <img src="{{ ticket.image.url }}" alt="Ticket Image" style="width: 100px; height: auto; max-width: 100%; border-radius: 4px;">
+                        </a>
+                        {% else %}
+                        No Image
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button class="btn btn-info btn-custom info-button" data-ticket-id="{{ ticket.id }}">Information</button>
+                        <button type="button" class="btn btn-danger delete" data-url="{% url 'delete_closed_ticket' ticket.id %}">Supprimer</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal for Information -->
+    <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="infoModalLabel">Détails du Ticket</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="info-modal-body">
+                    <!-- Les informations du ticket seront chargées ici par JavaScript -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirmation de Suppression</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Êtes-vous sûr de vouloir supprimer ce ticket ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <form id="deleteForm" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Supprimer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        $(document).ready(function () {
+            // Show ticket information in modal
+            $('.info-button').on('click', function () {
+                var ticketId = $(this).data('ticket-id');
+                $.ajax({
+                    url: `/closed-tickets/${ticketId}/details/`,
+                    method: 'GET',
+                    success: function (data) {
+                        var modalBody = $('#info-modal-body');
+                        modalBody.html(`
+                            <p><strong>Catégorie:</strong> ${data.role}</p>
+                            <p><strong>Description:</strong> ${data.description}</p>
+                            <p><strong>Emplacement:</strong> ${data.location}</p>
+                            <p><strong>Priorité:</strong> ${data.priority}</p>
+                            <p><strong>Status:</strong> ${data.status}</p>
+                            <p><strong>Date de création:</strong> ${data.creationDate}</p>
+                            <p><strong>Date de validation:</strong> ${data.dateValidated}</p>
+                            <p><strong>Technicien ayant validé:</strong> ${data.validatedBy}</p>
+                            <p><strong>Date de clôture:</strong> ${data.dateClosed}</p>
+                            <p><strong>Superviseur ayant clôturé:</strong> ${data.closedBy}</p>
+                            <p><strong>Image:</strong> ${data.image ? '<img src="' + data.image + '" style="width:100px;height:auto;">' : 'Aucune Image'}</p>
+                        `);
+                        $('#infoModal').modal('show');
+                    },
+                    error: function () {
+                        alert('Erreur lors du chargement des détails du ticket.');
+                    }
+                });
+            });
+
+            // Show delete confirmation modal
+            $('.delete').on('click', function () {
+                var url = $(this).data('url');
+                $('#deleteForm').attr('action', url);
+                $('#deleteModal').modal('show');
+            });
+        });
+    </script>
+</body>
+</html>

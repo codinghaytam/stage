@@ -1,0 +1,341 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="../../static/css/neutralize.css" rel="stylesheet">
+    <link href="../../static/css/admin_page.css" rel="stylesheet">
+    <link href="../../static/css/error_messages.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="profile">
+            <img src="../../static/images/logo.png" alt="Logo-ONDA">
+        </div>
+        <ul class="list-unstyled components">
+            <li class="navigation">;
+                <li><a href="{% url 'dashboard' %}"><span>Dashboard</span></a></li>
+                <li><a href="{% url 'admin' %}"><span>Gestion des Utilisateurs</span></a></li>
+            </li>
+            <li><a href="{% url 'category_list' %}"><span>Gestion des Catégories</span></a></li>
+            <li><a href="{% url 'location_list' %}"><span>Gestion des Emplacements</span></a></li>
+            <li><a href="{% url 'closed_tickets_list' %}"><span>Tickets Clos</span></a></li>
+            <li><a href="{% url 'ticket_list' %}" >Tableau de Bords des Tickets</a>
+            <li><a href="{% url 'login' %}"><span>Déconnexion</span></a></li>
+        </ul>
+        
+        </div>
+        
+</div>
+    <div class="content">
+
+            <div class="messages">
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="{{ msg.tags }}">
+                    {{ msg }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            </div>
+            <div class="content-header">
+                <h1 style="font-weight: bold;">Gestion des employés</h1>
+                <a href="{% url "create_agent" %}" class="add-employee">Ajouter un employé</a>
+            </div>
+      
+                    <div class="topnav">
+                        <select class="filter">
+                            <option>All users</option>
+                            <option>Agent</option>
+                            <option>Superviseur</option>
+                            <option>Technician</option>
+                            <option>Station de Base</option>
+                        </select>
+                      <div class="search-container">
+                          <input type="text" placeholder="Search.." name="search" class="search-bar">
+                          <button type="submit" class="search">
+                                <img src="../../static/images/find.png">
+                          </button>
+                      </div>
+
+                        <button class="delete">Supprimer</button>
+                        <button class="desactiver">Desactivé</button>
+                        <button class="activer">activé</button>
+
+                    </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>matricule</th>
+                        <th>Nom complete</th>
+                        <th>Rôle</th>
+                        <th>status du compte</th>
+                        <th>Actions</th>
+                        <th></th>
+                    </tr>
+                    <tbody class="users">
+
+                    </tbody>
+            </table>
+        </div>
+         <dialog class="delete_dialog">
+             <div>
+                 <button class="exit">x</button>
+                 <span>êtes-vous  sure de vouloir supprimer cet utilisateur</span>
+                 <a class="supprimer">
+                     <button >supprimer</button>
+                 </a>
+             </div>
+        </dialog>
+        <dialog class="desactivation_dialog">
+             <div>
+                 <button class="exit_d">x</button>
+                 <span>êtes-vous  sure de vouloir désactiver le compte de cet utilisateur</span>
+                 <a class="Desactiver">
+                     <button >Désactiver</button>
+                 </a>
+             </div>
+        </dialog>
+        <dialog class="activation_dialog">
+             <div>
+                 <button class="exit_a">x</button>
+                 <span>êtes-vous sure de vouloir activer le compte de cet utilisateur</span>
+                 <a class="Activer">
+                     <button >Activer</button>
+                 </a>
+             </div>
+        </dialog>
+
+    <script>
+        $(document).ready(function () {
+    $.ajax({
+        type: "GET",
+        url: "{% url 'search_engine' %}",
+        data: {"query": document.querySelector(".search-bar").value},
+        success: function (response) {
+            $(".users").empty();
+            for (let key in response.users) {
+                let user_id = response.users[key].id;
+                let update_url = new URL(`http://localhost:8000/UpdateUser/${user_id}`);
+                let status = ""
+                if(response.users[key].status){
+                    status="actif"
+                }
+                else{
+                    status= "inactif"
+                }
+                $(".users").append(`
+                    <tr class="row" onclick="toggleInfo(${user_id})">
+                        <td>` + response.users[key].matricule + `</td>
+                        <td>` + response.users[key].full_name + `</td>
+                        <td>` + response.users[key].role + `</td>
+                        <td>` + status + `</td>
+                        <td>
+                            <a href=` + update_url.toString() + `>
+                                <button>modifier</button>
+                            </a>
+                        </td>
+                        <td>
+                            <input type="checkbox" id="checkbox` + response.users[key].id + `" onclick="checking(` + response.users[key].id + `)" />
+                        </td>
+                    </tr>
+                    <tr class="info" id="info${user_id}">
+                        <td colspan="2">
+                            <img src="` + response.users[key].image + `" onerror="this.onerror=null; this.src='../../static/images/placeholder.jpeg'" width="100px">
+                        </td>
+                        <td colspan="3">
+                            <ul>
+                                <li>email: ` + response.users[key].email + `</li>
+                                <li>n.téléphone: ` + response.users[key].phone + `</li>
+                                <li>cin: ` + response.users[key].cin + `</li>
+                            </ul>
+                        </td>
+                    </tr>
+                `);
+                $("#info" + user_id).hide(); 
+            }
+        }
+    });
+
+    // Toggle info row visibility when clicking on a row
+    window.toggleInfo = function (id) {
+        $("#info" + id).slideToggle();
+    };
+
+               $(".search").on("click",function (){
+
+            $.ajax({
+                type:"GET",
+                url :"{% url 'search_engine' %}",
+                data: {"query":document.querySelector(".search-bar").value},
+                success: function(responce){
+                        $(".users").empty()
+                    let data = []
+                    if($(".filter").val()=="All users"){
+                        data = responce.users
+                    }
+                    else if ($(".filter").val()=="Agent")
+                    {
+                        data = responce.users.filter((user)=> user.role.toLowerCase()=="agent")
+                    }
+                    else if ($(".filter").val()=="Technician")
+                    {
+                        data = responce.users.filter((user)=> user.role.toLowerCase().includes("technician"))
+                    }
+                    else if ($(".filter").val()=="Superviseur")
+                    {
+                        data = responce.users.filter((user)=> user.role.toLowerCase().includes("supervisor"))
+                    }
+                    else if ($(".filter").val()=="Station de Base")
+                    {
+                        data = responce.users.filter((user)=> user.role.toLowerCase()=="admin")
+                    }
+                    else
+                    {
+                        data = responce.users.filter((user)=> user.role.toLowerCase()=="super admin")
+                    }
+                    if (data.length == 0){
+                        $(".users").append(`
+                        <tr>
+                            <td>Aucun employer trouvé </td>
+
+                        </tr>
+                        `)
+                    }else{
+
+                    for (let key in data){
+                        let user_id = data[key].id
+                        let update_url = new URL("http://localhost:8000/UpdateUser/${user_id}")
+                        let status =""
+                        if(data[key].status){
+                            status="actif"
+                            }
+                        else{
+                            status= "inactif"
+                            }
+                        $(".users").append(`
+                         <tr class="row" onclick="toggleInfo(${user_id})">
+                        <td>` + data[key].matricule + `</td>
+                        <td>` + data[key].full_name + `</td>
+                        <td>` + data[key].role + `</td>
+                        <td>` + status + `</td>
+                        <td>
+                            <a href=` + update_url.toString() + `>
+                                <button>modifier</button>
+                            </a>
+                        </td>
+                        <td>
+                            <input type="checkbox" id="checkbox` + data[key].id + `" onclick="checking(` + data[key].id + `)" />
+                        </td>
+                    </tr>
+                    <tr class="info" id="info${user_id}">
+                        <td colspan="2">
+                            <img src="` + data[key].image + `" onerror="this.onerror=null; this.src='../../static/images/placeholder.jpeg'" width="100px">
+                        </td>
+                        <td colspan="3">
+                            <ul>
+                                <li>email: ` + data[key].email + `</li>
+                                <li>n.téléphone: ` + data[key].phone + `</li>
+                                <li>cin: ` + data[key].cin + `</li>
+                            </ul>
+                        </td>
+                    </tr>
+                        `);
+                        $("#info" + user_id).hide(); 
+                    }
+                    }
+                    }
+
+                }
+                ,
+            )
+            })
+
+            }
+        );
+        const dialog = document.querySelector(".delete_dialog");
+        const d_dialog = document.querySelector(".desactivation_dialog")
+        const a_dialog =  document.querySelector(".activation_dialog")
+        
+    dialog.close();
+    const button = document.querySelector(".delete");
+    button.addEventListener("click", function () {
+        dialog.showModal();
+    });
+    
+    const d_button = document.querySelector(".desactiver");
+    d_button.addEventListener("click", function () {
+        d_dialog.showModal();
+    });
+    const a_button = document.querySelector(".activer");
+    a_button.addEventListener("click", function () {
+        a_dialog.showModal();
+    });
+
+    const exit = document.querySelector(".exit");
+    exit.addEventListener("click", function () {
+        dialog.close();
+    });
+    
+    const exit_d = document.querySelector(".exit_d");
+    exit_d.addEventListener("click", function () {
+        d_dialog.close();
+    });
+    
+    const exit_a = document.querySelector(".exit_a");
+    exit_a.addEventListener("click", function () {
+        a_dialog.close();
+    });
+
+    let list = [];
+    window.checking = function (id) {
+        const checkbox = document.querySelector("#checkbox" + id);
+        if (checkbox.checked) {
+            list.push(id);
+        } else {
+            list.splice(list.indexOf(id), 1);
+        }
+    };
+
+    $(".supprimer").on("click", function () {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'delete_user' %}",
+            data: {"users": list.toString()},
+            success: function () {
+                location.reload(true);
+            }
+        });
+    });
+    $(".Desactiver").on("click", function () {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'DesactivateAcount' %}",
+            data: {"users": list.toString()},
+            success: function () {
+                location.reload(true);
+            }
+        });
+    });
+    $(".Activer").on("click", function () {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'ActivateAcount' %}",
+            data: {"users": list.toString()},
+            success: function () {
+                location.reload(true);
+            }
+        });
+    });
+
+    </script>
+
+
+</body>
+</html>

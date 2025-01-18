@@ -1,0 +1,40 @@
+{% extends "admin/create_employee.html" %}
+{% block form %}
+   
+    <div class="container">
+        <div class="form-header">
+            <img src="../../static/images/logo.png" alt="Company Logo" class="logo">
+        </div>
+    <h1>Update</h1>
+        <form  method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ admin_formset.management_form }}
+             {% for form in admin_formset %}
+            <label for="cin">CIN :</label>
+                    {{ form.cin }}
+            <label for="nom">Nom :</label>
+                {{ form.nom }}
+            <label for="prenom">Prénom :</label>
+                {{ form.prenom }}
+            <label for="telephone">Téléphone :</label>
+            {{ form.phone }}
+            <label for="image">image:</label>
+            {{ form.image }}
+                 <label for="age">age:</label>
+                 {{ form.age }}
+                  <label for="profession">matricule :</label>
+                    {{ form.matricule }}
+                {% endfor %}
+            <label for="email">Email :</label>
+            {{ user_form.email }}
+            <label for="password">Mot de passe :</label>
+            {{ user_form.password }}
+            <div class="controles">
+                <button type="submit">update</button>
+                <a class="annuler" href="{% url 'admin' %}">
+                    <button type="button">Annuler</button>
+                </a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
